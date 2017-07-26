@@ -48,6 +48,14 @@ Vagrant.configure("2") do |config|
       sudo chkconfig jenkins on
       sudo systemctl start jenkins.service
     EOC
-    
   end
+
+  config.vm.define "dw01" do |dw01|
+    dw01.vm.hostname = "dw01"
+    dw01.vm.provision "shell", inline: <<-EOC
+      sudo yum install -y postgresql postgresql-server postgresql-contrib
+      sudo postgresql-setup initdb
+    EOC
+  end
+
 end

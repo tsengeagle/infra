@@ -13,7 +13,10 @@ Vagrant.configure("2") do |config|
   config.ssh.private_key_path = ["~/.ssh/id_rsa","~/.vagrant.d/insecure_private_key"]
   config.ssh.insert_key = false
   config.vm.provision "file", source: "./authorized_keys", destination: "~/.ssh/authorized_keys"
-
+  config.vm.provision "shell", inline: <<-EOC
+    sudo yum update -y
+    sudo yum install wget -y
+  EOC
   config.vm.network "public_network"
 
   config.vm.define "gitlab" do |gitlab|
@@ -34,5 +37,17 @@ Vagrant.configure("2") do |config|
     EOC
   end
 
+  config.vm.define "jenkins" do |jenkins|
+    jenkins.vm.hostname = "jenkins"
 
+    jenkins.vm.provision "shell", inline: <<-EOC
+      sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+      sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+      sudo yum install -y java
+      sudo yum install -y jenkins
+      sudo chkconfig jenkins on
+      sudo systemctl start jenkins.service
+    EOC
+    
+  end
 end

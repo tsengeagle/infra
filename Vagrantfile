@@ -52,12 +52,16 @@ Vagrant.configure("2") do |config|
     EOC
   end
 
-  config.vm.define "dw01" do |dw01|
-    dw01.vm.hostname = "dw01"
-    dw01.vm.provision "shell", inline: <<-EOC
-      sudo yum install -y postgresql postgresql-server postgresql-contrib
-      sudo postgresql-setup initdb
-    EOC
+  config.vm.define "ap" do |ap|
+    ap.vm.hostname = "ap"
+
   end
+  #config.vm.define "dw01" do |dw01|
+  #  dw01.vm.hostname = "dw01"
+  #  dw01.vm.provision "shell", inline: <<-EOC
+  #    sudo yum install -y postgresql postgresql-server postgresql-contrib
+  #    sudo postgresql-setup initdb
+  #  EOC
+  #end
 
 end

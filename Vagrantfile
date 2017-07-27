@@ -33,8 +33,6 @@ Vagrant.configure("2") do |config|
         sudo systemctl reload firewalld
         curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
         sudo yum install gitlab-ce -y
-        #curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.rpm.sh | sudo bash
-        #sudo yum install gitlab-ee -y
         sudo gitlab-ctl reconfigure
     EOC
   end

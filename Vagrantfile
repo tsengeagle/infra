@@ -5,9 +5,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "centos/7"
   config.vm.provider "vmware_workstation" do |v|
-    v.gui = true
-    v.vmx["memsize"] = "4096"
-    v.vmx["numvcpus"] = "2"
+    #v.gui = true
+    v.vmx["memsize"] = "2048"
+    v.vmx["numvcpus"] = "1"
   end
 
   config.ssh.private_key_path = ["~/.ssh/id_rsa","~/.vagrant.d/insecure_private_key"]
@@ -17,6 +17,7 @@ Vagrant.configure("2") do |config|
     sudo yum update -y
     sudo yum install wget -y
   EOC
+
   config.vm.network "public_network"
 
   config.vm.define "gitlab" do |gitlab|
@@ -54,6 +55,24 @@ Vagrant.configure("2") do |config|
     ap.vm.hostname = "ap"
 
   end
+
+  config.vm.define "ci-runner" do |ci_runner|
+    ci_runner.vm.hostname = "ci-runner"
+
+    ci_runner.vm.provision "shell", inline: <<-EOC
+
+    EOC
+  end
+
+  #config.vm.define "jira" do |jira|
+  #  jira.vm.hostname = "jira"
+  #  jira.vm.provision "shell", inline: <<-EOC
+  #    sudo yum install -y java
+  #    sudo wget -L https://downloads.atlassian.com/software/jira/downloads/atlassian-jira-software-7.4.1.tar.gz
+  #    tar xvzf atlassian-jira-software-7.4.1.tar.gz -C /opt/jira
+  #  EOC
+  #end
+
   #config.vm.define "dw01" do |dw01|
   #  dw01.vm.hostname = "dw01"
   #  dw01.vm.provision "shell", inline: <<-EOC

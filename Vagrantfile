@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "centos/7"
   config.vm.provider "vmware_workstation" do |v|
-    #v.gui = true
+    v.gui = true
     v.vmx["memsize"] = "2048"
     v.vmx["numvcpus"] = "1"
   end
@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "file", source: "./authorized_keys", destination: "~/.ssh/authorized_keys"
   config.vm.provision "shell", inline: <<-EOC
     sudo yum update -y
-    sudo yum install wget -y
+    sudo yum install wget epel-release unzip -y
   EOC
 
   config.vm.network "public_network"
@@ -60,7 +60,7 @@ Vagrant.configure("2") do |config|
     ci_runner.vm.hostname = "ci-runner"
 
     ci_runner.vm.provision "shell", inline: <<-EOC
-
+      
     EOC
   end
 

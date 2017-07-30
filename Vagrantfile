@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "file", source: "./authorized_keys", destination: "~/.ssh/authorized_keys"
   config.vm.provision "shell", inline: <<-EOC
     sudo yum update -y
-    sudo yum install wget epel-release unzip -y
+    sudo yum install glibc.i686 wget epel-release unzip -y
   EOC
 
   config.vm.network "public_network"

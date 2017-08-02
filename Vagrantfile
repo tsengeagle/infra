@@ -20,6 +20,18 @@ Vagrant.configure("2") do |config|
 
   config.vm.network "public_network"
 
+  config.vm.define "controller" do |controller|
+    controller.vm.hostname = "controller"
+
+    controller.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
+
+    controller.vm.provision "shell", inline: <<-EOC
+      sudo yum install ansible -y
+    EOC
+
+  end
+
+
   config.vm.define "gitlab" do |gitlab|
     gitlab.vm.hostname = "gitlab"
 
@@ -38,19 +50,6 @@ Vagrant.configure("2") do |config|
     EOC
   end
 
-  config.vm.define "jenkins" do |jenkins|
-    jenkins.vm.hostname = "jenkins"
-
-    jenkins.vm.provision "shell", inline: <<-EOC
-      sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
-      sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
-      sudo yum install -y java
-      sudo yum install -y jenkins
-      sudo chkconfig jenkins on
-      sudo systemctl start jenkins.service
-    EOC
-  end
-
   config.vm.define "ap" do |ap|
     ap.vm.hostname = "ap"
 
@@ -64,21 +63,8 @@ Vagrant.configure("2") do |config|
     EOC
   end
 
-  #config.vm.define "jira" do |jira|
-  #  jira.vm.hostname = "jira"
-  #  jira.vm.provision "shell", inline: <<-EOC
-  #    sudo yum install -y java
-  #    sudo wget -L https://downloads.atlassian.com/software/jira/downloads/atlassian-jira-software-7.4.1.tar.gz
-  #    tar xvzf atlassian-jira-software-7.4.1.tar.gz -C /opt/jira
-  #  EOC
-  #end
-
-  #config.vm.define "dw01" do |dw01|
-  #  dw01.vm.hostname = "dw01"
-  #  dw01.vm.provision "shell", inline: <<-EOC
-  #    sudo yum install -y postgresql postgresql-server postgresql-contrib
-  #    sudo postgresql-setup initdb
-  #  EOC
-  #end
+  config.vm.define "dw01" do |dw01|
+    dw01.vm.hostname = "dw01"
+  end
 
 end

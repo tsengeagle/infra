@@ -1,0 +1,101 @@
+---
+- hosts: ap
+  become: true
+  tasks:
+  - name: update package
+    yum: 
+      name: '*'
+      state: latest
+      
+  # java
+  - name: copy jara package to local
+    copy:
+      src: ../../../packages/jre-8u151-linux-x64.rpm
+      dest: /tmp/jre.rpm
+  
+  - name: install java from local package
+    yum:
+      name: /tmp/jre.rpm
+      state: present
+    
+  - name: remove java local package
+    file:
+      path: /tmp/jre.rpm
+      state: absent
+
+ # install tomcat
+  - name: add group tomcat
+    group:
+      name: tomcat
+
+  - name: add user tomcat
+    user:
+      name: tomcat
+      group: tomcat
+      home: /home/tomcat
+  
+  - name: create tomcat home
+    file:
+      path: /opt/apache-tomcat-8
+      state: directory
+
+  - name: untar tomcat to node
+    unarchive:
+      src: ../../../packages/apache-tomcat-8.5.24.tar.gz
+      dest: /opt/apache-tomcat-8/
+      owner: tomcat
+      extra_opts: "--strip-components=1"
+
+  - name: assign owner to tomcat
+    file:
+      path: /opt/apache-tomcat-8
+      owner: tomcat
+      group: tomcat
+      state: directory
+      recurse: yes
+  
+  - name: install tomcat service
+    copy:
+      src: tomcat-service.sh
+      dest: /etc/init.d/tomcat
+      mode: 0775
+
+  # configuration tomcat
+  - name: configuration tomcat server
+    template:
+      src: server.xml
+      dest: /opt/apache-tomcat-8/conf/
+    notify: restart tomcat
+
+  - name: configuration tomcat user
+    template:
+      src: tomcat-users.xml
+      dest: /opt/apache-tomcat-8/conf/
+    notify: restart tomcat
+  
+  # firewall config
+  - name: firewall open 8080 port
+    firewalld:
+      port: 8080/tcp
+      permanent: true
+      state: enabled
+      immediate: yes
+    when: "ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'"
+
+  # start tomcat and ensure port is ready
+  - name: start tomcat
+    service:
+      name: tomcat
+      state: started
+      enabled: yes
+
+  - name: ensure tomcat is started
+    wait_for: 
+      port: 8080
+
+  # handle tomcat post install action
+  handlers:
+    - name: restart tomcat
+      service:
+        name: tomcat
+        state: restarted
